@@ -204,9 +204,12 @@ void Executor::treeBuild() {
                else if (out_queue.front()->type() == "Operator") {
 			out_queue.front()->addLeft(op_stack.top() );
 			op_stack.pop();
-			out_queue.front()->addRight(op_stack.top() );
-			op_stack.pop();			
-                        op_stack.push(out_queue.front() );
+			if (!op_stack.empty() ) {
+				out_queue.front()->addRight(op_stack.top() );
+				op_stack.pop();			
+			}
+                       	op_stack.push(out_queue.front() );
+			
                }
 		if (out_queue.size() == 1) {line = out_queue.front();}
 	       out_queue.pop();

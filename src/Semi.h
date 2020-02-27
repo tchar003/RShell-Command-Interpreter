@@ -8,9 +8,10 @@ public:
         Semi() {}
 	~Semi() {left = nullptr; right = nullptr;}
         bool execute() {
-			left->execute();
-			return right->execute();
-		}
+			
+		if (!right){return left->execute();}
+		else {left->execute(); return right->execute();}
+	}
         std::string print() {
 		if (!left || !right) {return ";";}
 		return left->print() + ";" + right->print();
