@@ -13,8 +13,8 @@ public:
 	std::string type() {return str;}
 
 	
-        void addLeft(Base* lhs) {return;}
-        void addRight(Base* rhs) {return;}
+        void addLeft(std::shared_ptr<Base> lhs) {return;}
+        void addRight(std::shared_ptr<Base> rhs) {return;}
 
 
 private:

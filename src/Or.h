@@ -5,17 +5,20 @@
 
 class Or : public Base {
 public:
-        Or() {}
+        Or() {left = nullptr; right = nullptr;}
 	~Or() {
-		delete[] left;
+		//delete[] left;
 		left = nullptr;
-		delete[] right;
+		//delete[] right;
 		right = nullptr;
 	}
         bool execute() {
-		bool temp;
+		bool temp = 0;
 		if (temp = left->execute() ) {
-			return right->execute();
+			std::cout << "LEFT FAILED"  << temp << "\n";
+			temp = right->execute();
+			std::cout << "Returned right: " << temp << "\n";
+			return temp;
 		}
 		else {return temp;}
 	}
@@ -27,12 +30,12 @@ public:
 	}
         bool failed() {return left->failed();}
 	std::string type() {return "Operator";}
-	void addLeft(Base* lhs) {left = lhs;}
-        void addRight(Base* rhs) {right = rhs;}
+	void addLeft(std::shared_ptr<Base> lhs) {left = lhs;}
+        void addRight(std::shared_ptr<Base> rhs) {right = rhs;}
 
 private:
-	Base* left = nullptr;
-	Base* right = nullptr;
+	std::shared_ptr<Base> left = nullptr;
+	std::shared_ptr<Base> right = nullptr;
 };
 
 

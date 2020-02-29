@@ -15,7 +15,13 @@ bool Cmd::execute() {
 
 	//char testCmd[] = "test\0";
 	//struct stat path_stat;	
-
+/*
+		std::cout << "-----------COMMAND-------------\n\n";
+		std::cout << "args: " << argc << "\n";
+		for (unsigned i = 0; i < argc - 1; ++i) {
+			std::cout << i << " " << args[i] << "\n";
+		}
+		std::cout << "-------------------------------\n\n";*/
         if (strcmp(args[0],"test") == 0) {
                 struct stat path_stat;
                // std::cout << "T: \n" << args[0] << "\n" << args[1] << "\n";
@@ -64,8 +70,6 @@ bool Cmd::execute() {
 
    		pid_t cpid, endpid;
 		int wstatus;
-	
-	
 		if ( ( cpid = fork() ) < 0) {
 			perror("fork");
 			exeFailed = true;

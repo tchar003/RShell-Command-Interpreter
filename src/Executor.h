@@ -4,7 +4,7 @@
 #include <regex>
 #include <stack>
 #include <queue>
-
+#include <memory>
 
 
 #include "Base.h"
@@ -18,7 +18,13 @@ class Executor: public Base {
 public:
 	
         ~Executor() {
-		delete line;
+		/*
+		for (unsigned i = 0; i < rawExp.size(); ++i) {
+			delete rawExp[i];
+			rawExp[i] = nullptr;
+		}
+		rawExp.clear();
+		line = nullptr;*/
 	}
 	void mirror(std::vector<std::string> parsed);
 	void treeBuild();
@@ -36,13 +42,13 @@ public:
 	std::string type() { return "what are you calling me for?";}
 
 
-	void addLeft(Base* lhs) {return;}
-        void addRight(Base* rhs) {return;}
+	void addLeft(std::shared_ptr<Base> lhs) {return;}
+        void addRight(std::shared_ptr<Base> rhs) {return;}
 
 
 private:
-	Base* line;
-	std::vector<Base* > rawExp;
+	std::shared_ptr<Base> line;
+	std::vector<std::shared_ptr<Base> > rawExp;
 };
 
 

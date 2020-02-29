@@ -5,19 +5,23 @@
 
 class And : public Base {
 public:
-        And(){}
+        And(){left = nullptr; right = nullptr;}
 	~And() {
-		delete[] left;
+		
+		//delete[] left;
 		left = nullptr;
-		delete[] right; 
+		//delete[] right; 
 		right = nullptr;
 	}
         bool execute() {
-		bool temp;
-		if (temp = left->execute()) {
+		if (left && right) {
+		bool temp = left->execute();
+			if (temp) {
 			return temp;
+			}
+			else {return right->execute();}
 		}
-		else {return right->execute();}
+		else {return true;}
 		
 	}
         std::string print() {
@@ -28,13 +32,13 @@ public:
 	std::string type() {return "Operator";}
 
 	
-        void addLeft(Base* lhs) {left = lhs;}
-        void addRight(Base* rhs) {right = rhs;}
+        void addLeft(std::shared_ptr<Base> lhs) {left = lhs;}
+        void addRight(std::shared_ptr<Base> rhs) {right = rhs;}
 
 
 private:
-	Base* left;
-	Base* right;
+	std::shared_ptr<Base> left;
+	std::shared_ptr<Base>  right;
 };
 
 

@@ -48,21 +48,25 @@ void Executor::mirror(std::vector<std::string> parsed) {
 	
 	vector<string> mirrored;
 	
+	bool noFlag = false;
+
 	for (unsigned i = 0; i < parsed.size(); ++i) {
+            if (noFlag && parsed.at(i).at(0) != '-') {
+		mirrored.push_back("-e");
+		noFlag = false;
+	    }
 	    if (parsed.at(i).at(0) == '(' && parsed.at(i).size() > 1) {
 	       parsed.at(i).erase(0, 1);
 	       mirrored.push_back("(");
 	    }
 
 	    
-	    if (parsed.at(i).at(0) == '[') {
-		if (parsed.at(i).size() != 0) {
-	       		parsed.at(i).erase(0, 1);
-	 	}
+	    if (parsed.at(i) == "[") {
 	       mirrored.push_back("test");
+		noFlag = true;
 	    }
 	    
-	    if (parsed.at(i).size() > 0) {
+	    if (parsed.at(i).size() > 0 && parsed.at(i) != "]" && parsed.at(i) != "[" ) {
 	    	mirrored.push_back(parsed.at(i));	    
 	    }
 
@@ -70,28 +74,27 @@ void Executor::mirror(std::vector<std::string> parsed) {
 	        mirrored.back().pop_back();
 	        mirrored.push_back(")");
 	    }
-	
-	    if (mirrored.size() > 0 && mirrored.back().back() == ']') {
-	        mirrored.back().pop_back();
-	    }
 	    
 	    if (mirrored.size() > 0 && mirrored.back().back() == ';') {
 	        mirrored.back().pop_back();
 	        mirrored.push_back(";");
 	    }
 	}
-	/*
-	std::cout << "_________MIRRORED INPUT__________\n\n";
-	for (unsigned i = 0; i < mirrored.size(); ++i) {
-		std::cout << mirrored.at(i) << "\n";
-	}*/
+	//std::cout << "_________MIRRORED INPUT__________\n\n";
+	//for (unsigned i = 0; i < mirrored.size(); ++i) {
+	//	std::cout << mirrored.at(i) << "\n";
+	//}
 	
 	for (unsigned i = 0; i < mirrored.size(); ++i) {
 		if (mirrored.at(i) == "("){
-			rawExp.push_back(new Paren(")"));
+//			rawExp.push_back(new Paren("("));
+			rawExp.push_back(std::make_shared<Paren>("("));
+
 		}
 		else if (mirrored.at(i) == ")") {
-			rawExp.push_back(new Paren("("));
+//			rawExp.push_back(new Paren(")"));
+			rawExp.push_back(std::make_shared<Paren>(")"));
+
 		}
 		
 		else if (regex_match(mirrored.at(i), comment)) {
@@ -115,24 +118,29 @@ void Executor::mirror(std::vector<std::string> parsed) {
 			temp.push_back(mirrored.at(i));
 			}
 
-			rawExp.push_back(new Cmd(temp));
+			rawExp.push_back(std::make_shared<Cmd>(temp));
 		}
 		
 		if (regex_match(mirrored.at(i), connector)) {
 			if (mirrored.at(i) == "||") {
-				rawExp.push_back(new Or() );
+			//	rawExp.push_back(new Or() );
+				rawExp.push_back(std::make_shared<Or>() );
 			}
 			else if (mirrored.at(i) == "&&") {
-				rawExp.push_back(new And() );
+//				rawExp.push_back(new And() );
+				 rawExp.push_back(std::make_shared<And>() );
+
 			}
 			else {
-				rawExp.push_back(new Semi() );
+				//rawExp.push_back(new Semi() );
+				  rawExp.push_back(std::make_shared<Semi>() );
+
 			}
 		}
 							
 	}	
 
-	reverse(rawExp.begin(), rawExp.end() );
+	//reverse(rawExp.begin(), rawExp.end() );
 	
 	/*
 	for (unsigned i = 0; i < rawExp.size(); ++i) {
@@ -146,8 +154,8 @@ void Executor::treeBuild() {
 	
         regex parens("\\(|\\)");
 
-	stack<Base* > op_stack;
-	queue<Base* > out_queue;
+	stack<std::shared_ptr<Base> > op_stack;
+	queue<std::shared_ptr<Base> > out_queue;
 	
 	//std::cout << "_________________SY_________________\n\n";
 	
@@ -162,11 +170,16 @@ void Executor::treeBuild() {
 			op_stack.push(rawExp.at(i));
 		}
 		if (rawExp.at(i)->type() == "Operator") {
+			 while (!op_stack.empty() && op_stack.top()->type() != "(") {
+				std::shared_ptr<Base> temp = op_stack.top();
+				op_stack.pop();
+				out_queue.push(temp);
+			}
 			op_stack.push(rawExp.at(i));
 		}
 		if (rawExp.at(i)->type() == ")") {
 			while (op_stack.top()->type() != "(") {
-				Base* temp = op_stack.top();
+				std::shared_ptr<Base> temp = op_stack.top();
 				op_stack.pop();
 				out_queue.push(temp);
 			}
@@ -182,9 +195,9 @@ void Executor::treeBuild() {
 			rawExp[i] = nullptr;
 		}
 	}*/
-
+	
 	while (!op_stack.empty() ) {
-		Base* temp = op_stack.top();
+		std::shared_ptr<Base> temp = op_stack.top();
 		op_stack.pop();
 		out_queue.push(temp);
 	}
@@ -202,16 +215,16 @@ void Executor::treeBuild() {
                         op_stack.push(out_queue.front() );
                }
                else if (out_queue.front()->type() == "Operator") {
-			out_queue.front()->addLeft(op_stack.top() );
+			out_queue.front()->addRight(op_stack.top() );
 			op_stack.pop();
 			if (!op_stack.empty() ) {
-				out_queue.front()->addRight(op_stack.top() );
+				out_queue.front()->addLeft(op_stack.top() );
 				op_stack.pop();			
 			}
                        	op_stack.push(out_queue.front() );
 			
                }
-		if (out_queue.size() == 1) {line = out_queue.front();}
+	       if (out_queue.size() == 1) {line = out_queue.front();}
 	       out_queue.pop();
 	}
 		

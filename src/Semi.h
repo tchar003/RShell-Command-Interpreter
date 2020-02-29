@@ -5,7 +5,7 @@
 
 class Semi : public Base {
 public:
-        Semi() {}
+        Semi() {left = nullptr; right = nullptr;}
 	~Semi() {left = nullptr; right = nullptr;}
         bool execute() {
 			
@@ -21,13 +21,13 @@ public:
 
 
 	
-        void addLeft(Base* lhs) { left = lhs;}
-        void addRight(Base* rhs) {right = rhs;}
+        void addLeft(std::shared_ptr<Base> lhs) { left = lhs;}
+        void addRight(std::shared_ptr<Base> rhs) {right = rhs;}
 
 
 private:
-		Base* left;
-		Base*  right;
+		std::shared_ptr<Base> left;
+		std::shared_ptr<Base>  right;
 };
 
 

@@ -10,17 +10,18 @@
 #include <algorithm>
 #include <sstream>
 #include <iostream>
+#include <memory>
 class Base {
 public:
         Base() {};
-        ~Base() {};
+        virtual ~Base() {};
         virtual bool execute() = 0;
         virtual std::string print() = 0;
         virtual bool failed() = 0;
 	virtual std::string type() = 0;
 	
-	virtual void addLeft(Base* lhs) = 0;
-	virtual void addRight(Base* rhs) = 0;
+	virtual void addLeft(std::shared_ptr<Base> lhs) = 0;
+	virtual void addRight(std::shared_ptr<Base> rhs) = 0;
 };
 
 
