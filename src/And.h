@@ -5,42 +5,52 @@
 
 class And : public Base {
 public:
-        And(){left = nullptr; right = nullptr;}
+	And() : left(nullptr), right(nullptr) {}
+
 	~And() {
-		
-		//delete[] left;
 		left = nullptr;
-		//delete[] right; 
 		right = nullptr;
 	}
-        bool execute() {
+
+	bool execute() {
 		if (left && right) {
-		bool temp = left->execute();
+			bool temp = left->execute();
 			if (temp) {
-			return temp;
+				return temp;
+			} else {
+				return right->execute();
 			}
-			else {return right->execute();}
+		} else {
+			return true;
 		}
-		else {return true;}
-		
 	}
-        std::string print() {
-			if (!left || !right) { return "&&"; }
-			return left->print() + "&& " + right->print();
+
+	std::string print() {
+		if (!left || !right) {
+			return "&&";
+		}
+		return left->print() + "&& " + right->print();
 	}
-        bool failed() {return left->failed();}
-	std::string type() {return "Operator";}
 
-	
-        void addLeft(std::shared_ptr<Base> lhs) {left = lhs;}
-        void addRight(std::shared_ptr<Base> rhs) {right = rhs;}
+	bool failed() {
+		return left->failed();
+	}
 
+	std::string type() {
+		return "Operator";
+	}
+
+	void addLeft(std::shared_ptr<Base> lhs) {
+		left = lhs;
+	}
+
+	void addRight(std::shared_ptr<Base> rhs) {
+		right = rhs;
+	}
 
 private:
 	std::shared_ptr<Base> left;
-	std::shared_ptr<Base>  right;
+	std::shared_ptr<Base> right;
 };
 
-
 #endif
-

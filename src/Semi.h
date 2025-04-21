@@ -1,34 +1,61 @@
-#ifndef __Semi_H__
-#define __Semi_H__
+#ifndef __SEMI_H__
+#define __SEMI_H__
 
 #include "Base.h"
 
 class Semi : public Base {
 public:
-        Semi() {left = nullptr; right = nullptr;}
-	~Semi() {left = nullptr; right = nullptr;}
-        bool execute() {
-			
-		if (!right){return left->execute();}
-		else {left->execute(); return right->execute();}
+	Semi() {
+		left = nullptr;
+		right = nullptr;
 	}
-        std::string print() {
-		if (!left || !right) {return ";";}
+
+	~Semi() {
+		left = nullptr;
+		right = nullptr;
+	}
+
+	// Executes the left command and then the right command
+	bool execute() {
+		if (!right) {
+			return left->execute();
+		} else {
+			left->execute();
+			return right->execute();
+		}
+	}
+
+	// Prints the representation of the Semi operator
+	std::string print() {
+		if (!left || !right) {
+			return ";";
+		}
 		return left->print() + ";" + right->print();
 	}
-        bool failed() {return left->failed();}
-	std::string type() {return "Operator";}
 
+	// Checks if the left command failed
+	bool failed() {
+		return left->failed();
+	}
 
-	
-        void addLeft(std::shared_ptr<Base> lhs) { left = lhs;}
-        void addRight(std::shared_ptr<Base> rhs) {right = rhs;}
+	// Returns the type of the operator
+	std::string type() {
+		return "Operator";
+	}
 
+	// Adds a left operand
+	void addLeft(std::shared_ptr<Base> lhs) {
+		left = lhs;
+	}
+
+	// Adds a right operand
+	void addRight(std::shared_ptr<Base> rhs) {
+		right = rhs;
+	}
 
 private:
-		std::shared_ptr<Base> left;
-		std::shared_ptr<Base>  right;
+	std::shared_ptr<Base> left;
+	std::shared_ptr<Base> right;
 };
-
 
 #endif

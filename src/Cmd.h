@@ -10,44 +10,62 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <vector>
+#include <memory>
 
 class Cmd : public Base {
 public:
-	Cmd() {args = nullptr; argc = 0; exeFailed = false;}
+	// Default constructor
+	Cmd() {
+		args = nullptr;
+		argc = 0;
+		exeFailed = false;
+	}
+
+	// Creates a command object from a vector of strings
+	// Execvp requires a null-terminated string
 	Cmd(std::vector<std::string> parsed) {
 		exeFailed = false;
 		argc = parsed.size() + 1;
 		args = new char*[argc];
-		//args[parsed.size()] = new char[1];
-		args[parsed.size()] = new char[1];
-		args[parsed.size()] = '\0';
+
+		args[parsed.size()] = nullptr;
 		for (unsigned i = 0; i < parsed.size(); ++i) {
 			args[i] = new char[parsed.at(i).size() + 1];
-			strcpy(args[i], parsed[i].c_str() );
+			strcpy(args[i], parsed[i].c_str());
 		}
-		
-
 	}
-        ~Cmd() {
-		for (unsigned i = 0; i < starts.size(); ++i) {
+
+	// Destructor
+	~Cmd() {
+		for (unsigned i = 0; i < argc - 1; ++i) {
 			delete[] args[i];
 		}
 		delete[] args;
 	}
-        bool execute();
-        std::string print();
-        bool failed() {return exeFailed;}
-	std::string type(){return "Cmd";}
-	
-	void addLeft(std::shared_ptr<Base> lhs) {return;}
-	void addRight(std::shared_ptr<Base> rhs) {return;}
+
+	// Executes the command
+	bool execute();
+
+	// Prints the command
+	std::string print();
+
+	// Checks if execution failed
+	bool failed() { return exeFailed; }
+
+	// Returns the type of the object
+	std::string type() { return "Cmd"; }
+
+	// No-op for adding left child
+	void addLeft(std::shared_ptr<Base> lhs) { return; }
+
+	// No-op for adding right child
+	void addRight(std::shared_ptr<Base> rhs) { return; }
+
 private:
-		std::vector<char*> starts;
-		char** args;
-		int argc;
-		bool exeFailed;
+	char** args;      // Arguments for the command
+	int argc;         // Argument count
+	bool exeFailed;   // Flag to indicate if execution failed
 };
 
-
 #endif
-
